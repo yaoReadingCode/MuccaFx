@@ -30,7 +30,8 @@ STYLES = {
     'comment': format('red'),
     'self': format('black'),
     'numbers': format('red'),
-    'deffunc' : format('purple')
+    'deffunc' : format('purple'),
+    'keyword2' : format('purple')
 }
 
 
@@ -44,7 +45,10 @@ class PythonHighlighter (QSyntaxHighlighter):
         'for', 'from', 'global', 'if', 'import', 'in',
         'is', 'lambda', 'not', 'or', 'pass', 'print',
         'raise', 'return', 'try', 'while', 'yield',
-        'None', 'True', 'False',
+    ]
+
+    keywords2 = [
+        'None', 'True', 'False','int\(','float\(','str\('
     ]
 
     # Python operators
@@ -78,6 +82,8 @@ class PythonHighlighter (QSyntaxHighlighter):
         # Keyword, operator, and brace rules
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword'])
             for w in PythonHighlighter.keywords]
+        rules += [(r'\b%s\b' % w, 0, STYLES['keyword2'])
+            for w in PythonHighlighter.keywords2]
         rules += [(r'%s' % o, 0, STYLES['operator'])
             for o in PythonHighlighter.operators]
         rules += [(r'%s' % b, 0, STYLES['brace'])

@@ -6,6 +6,31 @@ import syntax
 import json
 import os
 from muccafx import *
+import threading
+
+class MuccaAppyFxGui(threading.Thread):
+    script = None
+    ass = None
+    export_path = None
+    
+    def __init__(self, script = None, ass = None, export_path = None):
+        self.script = script
+        self.ass = ass
+        self.export_path = export_path
+
+    def run(self):
+        try:
+            exec str(self.script)
+        except Exception,e:
+            print "Karaoke Script Error!","Karaoke Script Python error:\n{0}".format(str(e))
+            return None
+        try:
+            effect = KaraokeEffect(ass)
+            effect.apply()
+            return True
+        except:
+            print "Unable to apply karaoke effect."
+            return None
 
 class MuccaFxGui(QtGui.QMainWindow):
     script_path = None
@@ -17,6 +42,11 @@ class MuccaFxGui(QtGui.QMainWindow):
         self.ui.setupUi(self)
         syntax.PythonHighlighter(self.ui.script.document())
         self.ui.script.setText("""class KaraokeEffect(MuccaFxEffect):
+	def apply(self, ass):
+		for line in ass.lines:
+			self.dispatchEffect(line)
+		pass
+
 	def dispatchEffect(self, line):
 		if line['effect'] == 'sample':
 			self.sampleEffect(line)
