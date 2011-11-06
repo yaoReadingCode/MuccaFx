@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>images/icons/disk_multiple.png</file>
+    <file>images/icons/color_wheel.png</file>
+    <file>images/icons/script_go.png</file>
+    <file>images/icons/aegisub.png</file>
+    <file>images/icons/television.png</file>
+    <file>images/icons/exclamation.png</file>
+    <file>images/icons/disk.png</file>
+    <file>images/icons/folder.png</file>
+  </qresource>
+</RCC>

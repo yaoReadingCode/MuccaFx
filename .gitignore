@@ -1,0 +1,10 @@
+# Binaries
+cmd.exe
+
+# Python compiled
+*.pyd
+*.pyc
+
+# MuccaFx files
+*.mfx
+*.ass
