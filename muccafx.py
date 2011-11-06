@@ -1,17 +1,31 @@
 import win32gui
 import win32con
 import win32ui
+import re
 
 class FxLine:
     text = ''
+    start_time = 0
+    end_time = 0
+    effect = ''
+    syls = []
     
     def __init__(self, data = {}):
         if 'text' in data:
-            self.text = str(data['text']
+            self.text = str(data['text'])
+        if 'start_time' in data:
+            self.start_time = int(data['start_time'])
+        if 'end_time' in data:
+            self.end_time = int(data['end_time'])
         pass
+        
 
     def __str__(self):
-        return str(self.text)
+        if len(self.syls) > 0:
+            self.text = ''
+            for syl in self.syls:
+                self.text += str(syl)
+        return re.sub('(\\{.*?\\})','',str(self.text))
 
 class MuccaFxEffect:
     ass = None
@@ -120,3 +134,5 @@ class TextToy:
 
 if __name__ == "__main__":
     print TextToy("T",{'italic':True}).getExtents()
+    line = FxLine({'text':'{\b1}LOL{\b0}'})
+    print line
