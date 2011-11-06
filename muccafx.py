@@ -2,9 +2,30 @@ import win32gui
 import win32con
 import win32ui
 
-class MuccaFxEffect:
-    def __init__(self, ass_path, export_path = '.\\_preview.ass'):
+class FxLine:
+    text = ''
+    
+    def __init__(self, data = {}):
+        if 'text' in data:
+            self.text = str(data['text']
         pass
+
+    def __str__(self):
+        return str(self.text)
+
+class MuccaFxEffect:
+    ass = None
+    nlines = []
+    
+    def __init__(self, ass):
+        self.ass = ass
+        pass
+
+    def appendLine(self, line):
+        self.nlines.append(line)
+
+    def _getNewLines(self):
+        return self.nlines
 
 class TextToy:
     def __init__(self, text = '', style = {}):
