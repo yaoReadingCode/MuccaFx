@@ -3,7 +3,32 @@ import win32con
 import win32ui
 import re
 
-class FxLine:
+class assStyle:
+    def __init__(self, data = {}):
+        if 'fontname' in data:
+            self.fontname = str(data['fontname'])
+        if 'fontsize' in data:
+            self.fontsize = int(data['fontsize'])
+        if 'alpha1' in data:
+            self.alpha1 = str(data['alpha1'])
+        if 'color1' in data:
+            self.color1 = str(data['color1'])
+        if 'alpha2' in data:
+            self.alpha2 = str(data['alpha2'])
+        if 'color2' in data:
+            self.color2 = str(data['color2'])
+        if 'alpha3' in data:
+            self.alpha3 = str(data['alpha3'])
+        if 'color3' in data:
+            self.color3 = str(data['color3'])
+        if 'alpha4' in data:
+            self.alpha4 = str(data['alpha4'])
+        if 'color4' in data:
+            self.color4 = str(data['color4'])
+        if 'bold' in data:
+            self.bold = int(data['bold'])
+    
+class assLine:
     text = ''
     start_time = 0
     end_time = 0
@@ -13,6 +38,8 @@ class FxLine:
     def __init__(self, data = {}):
         if 'text' in data:
             self.text = str(data['text'])
+        if 'effect' in data:
+            self.effect = str(data['effect'])
         if 'start_time' in data:
             self.start_time = int(data['start_time'])
         if 'end_time' in data:
