@@ -31,7 +31,7 @@ class assStyle:
     margin_v = 10
     encoding = 1
     
-    def __init__(self, data = {}):
+    def __init__(self, data = {}, from_ass = None):
         if 'fontname' in data:
             self.fontname = str(data['fontname'])
         if 'fontsize' in data:
@@ -93,7 +93,7 @@ class assLine:
     effect = ''
     syls = []
     
-    def __init__(self, data = {}):
+    def __init__(self, data = {}, from_ass = None):
         if 'text' in data:
             self.text = str(data['text'])
         if 'effect' in data:
@@ -116,7 +116,7 @@ class assMeta:
     name = ''
     value = ''
 
-    def __init__(self, data = {}):
+    def __init__(self, data = {}, from_ass = None):
         if 'name' in data:
             self.name = data['name']
         if 'value' in data:
@@ -147,7 +147,8 @@ class assFile:
         meta_start = ['[Script Info]']
         style_start = ['[V4+ Styles]','[V4 Styles]']
         line_start = ['[Events]']
-        style_index_change = {}
+        style_index_change = {'primarycolour':'color1','secondarycolour':'color2','outlinecolour':'color3','backcolour':'color4','scalex':'scale_x','scaley':'scale_y','marginl':'margin_l','marginr':'margin_r','marginv':'margin_v'}
+        line_index_change = {'marginl':'margin_l','marginr':'margin_r','marginv':'margin_v','text':'raw_text'}
         in_location = None
         style_format = None
         line_format = None
@@ -159,6 +160,7 @@ class assFile:
                     if line.lower().find(meta_tag.lower()) >= 0 and line.lower().find(meta_tag.lower()) < 5:
                         in_location = 'meta'
                         start_tag_line = True
+                        print "===> Entred in meta."
                         continue
                 for style_tag in style_start:
                     if line.lower().find(style_tag.lower()) >= 0 and line.lower().find(style_tag.lower()) < 5:
@@ -195,6 +197,7 @@ class assFile:
                                     k = k + 1
 
                             style_format = p
+                            print p
                             continue
                         if line[:][0:p].lower() == 'style':
                             print "======> Recognized Style."
@@ -208,10 +211,45 @@ class assFile:
                                     s[style_format[k]] = param.strip()
                                     k = k + 1
                                 if 'name' in s:
-                                    self.styles[s['name']] = assStyle(s)
+                                    self.styles[s['name']] = assStyle(s, True)
                         continue
                                 
-                            
+                    if in_location == 'line':
+                        p = line.find(':')
+                        if line[:][0:p].lower() == 'format':
+                            print "======> Format Line."
+                            form = line[:][p+1:]
+                            k = 0
+                            p = {}
+                            for param_ass_name in form.split(','):
+                                param_ass_name = param_ass_name.strip().lower()
+                                if param_ass_name in line_index_change:
+                                    p[k] = line_index_change[param_ass_name]
+                                    k = k + 1
+                                else:
+                                    p[k] = param_ass_name
+                                    k = k + 1
+
+                            line_format = p
+                            print p
+                            continue
+                        if line[:][0:p].lower() == 'dialogue' or line[:][0:p].lower() == 'comment':
+                            print "======> Recognized Line."
+                            if not line_format:
+                                continue
+                            else:
+                                s = {}
+                                k = 0
+                                l = line[:][p+1:]
+                                for param in l.split(','):
+                                    s[line_format[k]] = param.strip()
+                                    k = k + 1
+                                if line[:][0:p].lower() == 'dialogue':
+                                    s['comment'] = 0
+                                else:
+                                    s['comment'] = 1
+                                self.lines.append(assLine(s, True))
+                                continue
                     print "=> {0}".format(line)
         fp.close()
         
