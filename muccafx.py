@@ -123,10 +123,13 @@ class assMeta:
             self.value = data['value']
         pass
 
+    def __str__(self):
+        return self.value
+
 class assFile:
     lines = []
-    styles = []
-    metas = []
+    styles = {}
+    metas = {}
     path = None
 
     def __init__(self, path = None):
@@ -141,19 +144,86 @@ class assFile:
             fp = open(self.path, 'rb+')
         except:
             return None
+        meta_start = ['[Script Info]']
+        style_start = ['[V4+ Styles]','[V4 Styles]']
+        line_start = ['[Events]']
+        style_index_change = {}
+        in_location = None
+        style_format = None
+        line_format = None
         for line in iter(fp):
-            print "|{0}|".format(line)
+            line = str(str(line).strip())
+            if not line == '':
+                start_tag_line = None
+                for meta_tag in meta_start:
+                    if line.lower().find(meta_tag.lower()) >= 0 and line.lower().find(meta_tag.lower()) < 5:
+                        in_location = 'meta'
+                        start_tag_line = True
+                        continue
+                for style_tag in style_start:
+                    if line.lower().find(style_tag.lower()) >= 0 and line.lower().find(style_tag.lower()) < 5:
+                        in_location = 'style'
+                        start_tag_line = True
+                        print "===> Entred in style."
+                        continue
+                for line_tag in line_start:
+                    if line.lower().find(line_tag.lower()) >= 0 and line.lower().find(line_tag.lower()) < 5:
+                        in_location = 'line'
+                        start_tag_line = True
+                        print "===> Entred in line."
+                        continue
+                if not start_tag_line:
+                    if in_location == 'meta':
+                        p = line.find(':')
+                        if p >= 1:
+                            self.appendMeta(line[:][0:p].strip(), assMeta({'name':line[:][0:p].strip(),'value':line[:][p+1:].strip()}))
+                        continue
+                    if in_location == 'style':
+                        p = line.find(':')
+                        if line[:][0:p].lower() == 'format':
+                            print "======> Format Style."
+                            form = line[:][p+1:]
+                            k = 0
+                            p = {}
+                            for param_ass_name in form.split(','):
+                                param_ass_name = param_ass_name.strip().lower()
+                                if param_ass_name in style_index_change:
+                                    p[k] = style_index_change[param_ass_name]
+                                    k = k + 1
+                                else:
+                                    p[k] = param_ass_name
+                                    k = k + 1
+
+                            style_format = p
+                            continue
+                        if line[:][0:p].lower() == 'style':
+                            print "======> Recognized Style."
+                            if not style_format:
+                                continue
+                            else:
+                                s = {}
+                                k = 0
+                                style = line[:][p+1:]
+                                for param in style.split(','):
+                                    s[style_format[k]] = param.strip()
+                                    k = k + 1
+                                if 'name' in s:
+                                    self.styles[s['name']] = assStyle(s)
+                        continue
+                                
+                            
+                    print "=> {0}".format(line)
         fp.close()
         
 
     def appendLine(self, line):
         self.lines.append(line)
 
-    def appendStyle(self, style):
-        self.styles.append(style)
+    def appendStyle(self, name, style):
+        self.styles[name] = style
 
-    def appendMeta(self, meta):
-        self.metas.append(meta)
+    def appendMeta(self, name, value):
+        self.metas[name] = value
     
 
 class MuccaFxEffect:
